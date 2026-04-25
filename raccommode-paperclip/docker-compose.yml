@@ -26,10 +26,37 @@ services:
         exec docker-entrypoint.sh "$$@"
       - --
     command:
-      - node
-      - --import
-      - ./server/node_modules/tsx/dist/loader.mjs
-      - server/dist/index.js
+      - sh
+      - -ec
+      - |
+        MARKER=/paperclip/.umbrel-bootstrap-done
+        INVITE_FILE=/paperclip/admin-invite-url.txt
+        (
+          until curl -fsS http://127.0.0.1:3100/api/health -o /tmp/h.json 2>/dev/null; do
+            sleep 2
+          done
+          if [ -f "$$MARKER" ]; then exit 0; fi
+          STATUS=$$(jq -r '.bootstrapStatus // "ready"' < /tmp/h.json)
+          if [ "$$STATUS" = "bootstrap_pending" ]; then
+            OUT=$$(cd /app && pnpm -s paperclipai auth bootstrap-ceo \
+                     --data-dir /paperclip \
+                     --base-url "$$PAPERCLIP_PUBLIC_URL" 2>&1 || true)
+            URL=$$(printf '%s\n' "$$OUT" | grep -oE 'https?://[^[:space:]]+/invite/pcp_bootstrap_[A-Za-z0-9]+' | tail -n1)
+            if [ -n "$$URL" ]; then
+              printf '%s\n' "$$URL" > "$$INVITE_FILE"
+              chmod 600 "$$INVITE_FILE" || true
+              printf '\n========================================\n'
+              printf '   PAPERCLIP FIRST-RUN ADMIN INVITE\n'
+              printf '   Open this URL once to claim CEO:\n'
+              printf '   %s\n' "$$URL"
+              printf '========================================\n\n'
+              touch "$$MARKER"
+            fi
+          else
+            touch "$$MARKER"
+          fi
+        ) &
+        exec node --import ./server/node_modules/tsx/dist/loader.mjs server/dist/index.js
     environment:
       USER_UID: "1000"
       USER_GID: "1000"

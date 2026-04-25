@@ -7,20 +7,25 @@ services:
       APP_HOST: raccommode-paperclip_server_1
       APP_PORT: 3100
 
-  init:
-    image: alpine:3.20
-    user: "0:0"
-    command: ["sh", "-c", "mkdir -p /paperclip && chown -R 1000:1000 /paperclip"]
-    volumes:
-      - ${APP_DATA_DIR}/data:/paperclip
-
   server:
     image: ghcr.io/paperclipai/paperclip:latest
     restart: on-failure
     stop_grace_period: 1m
-    depends_on:
-      init:
-        condition: service_completed_successfully
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        mkdir -p /paperclip
+        chown -R 1000:1000 /paperclip
+        if [ ! -s /paperclip/.better-auth-secret ]; then
+          head -c 48 /dev/urandom | base64 | tr -d '\n=' > /paperclip/.better-auth-secret
+          chown 1000:1000 /paperclip/.better-auth-secret
+          chmod 600 /paperclip/.better-auth-secret
+        fi
+        export BETTER_AUTH_SECRET="$$(cat /paperclip/.better-auth-secret)"
+        exec docker-entrypoint.sh "$$@"
+      - --
     environment:
       USER_UID: "1000"
       USER_GID: "1000"
@@ -30,6 +35,5 @@ services:
       PAPERCLIP_HOME: /paperclip
       PAPERCLIP_DEPLOYMENT_MODE: authenticated
       PAPERCLIP_DEPLOYMENT_EXPOSURE: private
-      BETTER_AUTH_SECRET: ${APP_SEED}
     volumes:
       - ${APP_DATA_DIR}/data:/paperclip

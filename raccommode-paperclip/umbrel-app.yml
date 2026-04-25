@@ -4,7 +4,7 @@ name: Paperclip
 tagline: Open-source orchestration for zero-human companies
 icon: https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/header.png
 category: Automation
-version: "latest"
+version: "2026.403.0"
 port: 3100
 description: >-
   Paperclip is open-source orchestration for zero-human companies. It is a
@@ -40,8 +40,9 @@ gallery:
   - https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/header.png
   - https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/footer.jpg
 releaseNotes: >-
-  First release of Paperclip on the Raccommode Community App Store. Tracks the
-  upstream `latest` image from ghcr.io/paperclipai/paperclip.
+  Image pinned to ghcr.io/paperclipai/paperclip@sha-a072377. First-run admin
+  invite is generated automatically by the post-start hook and printed to the
+  app logs (also saved at data/bootstrap-invite-url.txt on the host).
 dependencies: []
 path: ""
 defaultUsername: ""

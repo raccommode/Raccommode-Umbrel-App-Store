@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: raccommode-paperclip_server_1
+      APP_PORT: 3100
+
+  server:
+    image: ghcr.io/paperclipai/paperclip:latest
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      USER_UID: "1000"
+      USER_GID: "1000"
+      HOST: 0.0.0.0
+      PORT: "3100"
+      SERVE_UI: "true"
+      PAPERCLIP_HOME: /paperclip
+      PAPERCLIP_DEPLOYMENT_MODE: authenticated
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: private
+    volumes:
+      - ${APP_DATA_DIR}/data:/paperclip

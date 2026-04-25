@@ -1,0 +1,48 @@
+manifestVersion: 1
+id: raccommode-paperclip
+name: Paperclip
+tagline: Open-source orchestration for zero-human companies
+icon: https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/header.png
+category: Automation
+version: "latest"
+port: 3100
+description: >-
+  Paperclip is open-source orchestration for zero-human companies. It is a
+  Node.js server with a React UI that coordinates teams of AI agents (Claude
+  Code, Codex, OpenClaw, Cursor, and more) to autonomously run businesses.
+
+
+  Features:
+
+  - Org charts & governance — hierarchies, approval workflows, audit trails
+
+  - Budget control — token and cost tracking with hard stops
+
+  - Task management — issue-based ticket system with persistent context
+
+  - Heartbeat execution — scheduled agent wake-ups and event-triggered work
+
+  - Multi-company support — single deployment, per-company data isolation
+
+  - Skill injection — runtime capability loading without retraining
+
+
+  The container ships with an embedded PostgreSQL database, so no external
+  database is required to get started.
+
+developer: Paperclip
+website: https://github.com/paperclipai/paperclip
+submitter: Raccommode
+submission: https://github.com/raccommode/raccommode-umbrel-app-store
+repo: https://github.com/paperclipai/paperclip
+support: https://github.com/paperclipai/paperclip/issues
+gallery:
+  - https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/header.png
+  - https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/footer.jpg
+releaseNotes: >-
+  First release of Paperclip on the Raccommode Community App Store. Tracks the
+  upstream `latest` image from ghcr.io/paperclipai/paperclip.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

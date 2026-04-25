@@ -38,6 +38,6 @@ services:
       SERVE_UI: "true"
       PAPERCLIP_HOME: /paperclip
       PAPERCLIP_DEPLOYMENT_MODE: authenticated
-      PAPERCLIP_DEPLOYMENT_EXPOSURE: public
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: private
     volumes:
       - ${APP_DATA_DIR}/data:/paperclip

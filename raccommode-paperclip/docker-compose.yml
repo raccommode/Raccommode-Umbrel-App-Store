@@ -1,44 +1,31 @@
 version: "3.7"
 
 services:
-
   app_proxy:
     environment:
       APP_HOST: raccommode-paperclip_server_1
       APP_PORT: 3100
+      PROXY_AUTH_ADD: "false"
 
   server:
-    image: ghcr.io/paperclipai/paperclip:latest
+    image: ghcr.io/paperclipai/paperclip:sha-a072377@sha256:adfd3795fb98c2599c9b14443a49df86b8f08fb98f5ab7810e777d04c1ff6709
+    user: "1000:1000"
     restart: on-failure
-    stop_grace_period: 1m
     entrypoint:
-      - /bin/sh
-      - -ec
-      - |
-        mkdir -p /paperclip
-        chown -R 1000:1000 /paperclip
-        if [ ! -s /paperclip/.better-auth-secret ]; then
-          head -c 48 /dev/urandom | base64 | tr -d '\n=' > /paperclip/.better-auth-secret
-          chown 1000:1000 /paperclip/.better-auth-secret
-          chmod 600 /paperclip/.better-auth-secret
-        fi
-        export BETTER_AUTH_SECRET="$$(cat /paperclip/.better-auth-secret)"
-        exec docker-entrypoint.sh "$$@"
-      - --
-    command:
       - node
+    command:
       - --import
       - ./server/node_modules/tsx/dist/loader.mjs
       - server/dist/index.js
     environment:
-      USER_UID: "1000"
-      USER_GID: "1000"
-      HOST: 0.0.0.0
-      PORT: "3100"
-      SERVE_UI: "true"
-      PAPERCLIP_HOME: /paperclip
-      PAPERCLIP_DEPLOYMENT_MODE: authenticated
-      PAPERCLIP_DEPLOYMENT_EXPOSURE: public
+      HOST: "0.0.0.0"
+      PAPERCLIP_HOME: "/paperclip"
       PAPERCLIP_PUBLIC_URL: "http://${DEVICE_DOMAIN_NAME}:${APP_PROXY_PORT}"
+      PAPERCLIP_ALLOWED_HOSTNAMES: "${DEVICE_DOMAIN_NAME},${DEVICE_DOMAIN_NAME}:${APP_PROXY_PORT},${DEVICE_HOSTNAME},${DEVICE_HOSTNAME}:${APP_PROXY_PORT},${APP_DOMAIN},${APP_DOMAIN}:${APP_PROXY_PORT},${APP_HIDDEN_SERVICE},${APP_RACCOMMODE_PAPERCLIP_LOCAL_IPS},raccommode-paperclip_server_1"
+      BETTER_AUTH_SECRET: "${APP_SEED}"
+      PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
+      PAPERCLIP_TELEMETRY_DISABLED: "1"
+      DO_NOT_TRACK: "1"
     volumes:
       - ${APP_DATA_DIR}/data:/paperclip

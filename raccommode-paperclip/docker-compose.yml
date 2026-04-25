@@ -13,9 +13,8 @@ services:
     stop_grace_period: 1m
     entrypoint:
       - /bin/sh
-      - -c
+      - -ec
       - |
-        set -e
         mkdir -p /paperclip
         chown -R 1000:1000 /paperclip
         if [ ! -s /paperclip/.better-auth-secret ]; then
@@ -26,6 +25,11 @@ services:
         export BETTER_AUTH_SECRET="$$(cat /paperclip/.better-auth-secret)"
         exec docker-entrypoint.sh "$$@"
       - --
+    command:
+      - node
+      - --import
+      - ./server/node_modules/tsx/dist/loader.mjs
+      - server/dist/index.js
     environment:
       USER_UID: "1000"
       USER_GID: "1000"
